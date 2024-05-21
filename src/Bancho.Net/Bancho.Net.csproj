@@ -4,6 +4,11 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <OutputType>Library</OutputType>
+
+        <PackageId>Bancho.Net</PackageId>
+        <Authors>James Wilson</Authors>
+        <Description>.NET tooling to interact with Bancho (osu!stable's realtime server)</Description>
     </PropertyGroup>
 
     <ItemGroup>
