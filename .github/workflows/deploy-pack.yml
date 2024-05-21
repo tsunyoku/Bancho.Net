@@ -1,0 +1,39 @@
+name: Deploy to NuGet
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  pack:
+    runs-on: windows-latest
+    environment: production
+    defaults:
+      run:
+        shell: powershell
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set artifacts directory
+        id: artifactsPath
+        run: echo "::set-output name=NUGET_ARTIFACTS::${{github.workspace}}\artifacts"
+
+      - name: Install .NET 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Pack
+        run: dotnet pack -c Release src/Bancho.Net /p:Version=${{ github.ref_name }} -o ${{steps.artifactsPath.outputs.nuget_artifacts}}
+  
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bancho.Net
+          path: |
+            ${{steps.artifactsPath.outputs.nuget_artifacts}}\*.nupkg
+
+      - name: Publish
+        run: dotnet nuget push ${{steps.artifactsPath.outputs.nuget_artifacts}}\*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
